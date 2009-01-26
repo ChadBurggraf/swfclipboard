@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>SWFClipboard</title>
+	<link type="text/css" rel="stylesheet" href="http://yui.yahooapis.com/2.6.0/build/reset-fonts-grids/reset-fonts-grids.css" />
+	<link type="text/css" rel="stylesheet" href="http://yui.yahooapis.com/2.6.0/build/base/base-min.css" />
+	<link type="text/css" rel="stylesheet" href="sh/sh.css" />
+	<style type="text/css">
+	    h1,h2,h3,h4,h5,h6 { margin-top:0; }
+	    h1 { margin:1em 0 0 0; }
+	    #hd { margin-bottom:1em; }
+	</style>
+	<script type="text/javascript" src="swfclipboard.js"></script>
+	<script type="text/javascript">
+		window.onload = function(event) {
+			var cb1 = new SWFClipboard("hello_world", "Hello, world!");
+			var cb2 = new SWFClipboard("copy_navigate", "Gooogle", {
+                navigate: true,
+                navigateUrl: "http://google.com"
+            });
+            var cb3 = new SWFClipboard("copy_notify", "Alerts are terrible!", {
+                onTextCopied: function() { alert("I am terrible!"); }
+            });
+            var cb4 = new SWFClipboard("auto_navigate", "XKCD", {
+                navigate: true
+            });
+            var cb5 = new SWFClipboard();
+            document.onmousemove = function(event) {
+                event = event || window.event;
+                if (event) {
+                    var element = event.target || event.srcElement;
+                    if (element && element.className === "clipboard" && element !== cb5.target) {
+                        cb5.setCopyText(element.innerHTML);
+                        cb5.setTarget(element);
+                    }
+                }
+            };
+		};
+	</script>
+</head>
+<body>
+    <div id="doc" class="yui-t4">
+        <div id="hd">
+            <h1>SWFClipboard</h1>
+            <h4>A JavaScript clipboard interface.</h4>
+        </div>
+        <div id="bd">
+            <div id="yui-main">
+                <div class="yui-b">
+                    <h2 id="helloworld">Hello, World!</h2>
+                    <p>
+                        To get started, try <a id="hello_world" href="javascript:void(0);">clicking me</a> 
+                        to copy <em>Hello, world!</em> to your clipboard.
+                    </p>
+                    <pre name="code" class="js:nocontrols">window.onload = function() {
+    var cb1 = new SWFClipboard("hello_world", "Hello, world!");
+};</pre>
+
+                    <h2 id="copynavigate">Copy &amp; Navigate</h2>
+                    <p>
+                        Now lets try and navigate to 
+                        <a id="copy_navigate" href="javascript:void(0);">http://google.com</a> 
+                        while copying "Gooogle" to the clipboard. 
+                    </p>
+                    <pre name="code" class="js:nocontrols">window.onload = function() {
+    var cb2 = new SWFClipboard("copy_navigate", "Gooogle", {
+        navigate: true,
+        navigateUrl: "http://google.com"
+    });
+};</pre>
+                    <p>
+                        We have to let Flash take care of the navigation because Webkit browsers
+                        will silently block a <code>window.open</code> call that is not initiated
+                        by a direct user action. Opera blocks even the Flash method, but it
+                        at least generates a warning.
+                    </p>
+                    
+                    <h2 id="copynotify">Copy &amp; Notify</h2>
+                    <p>
+                        Often we'll want to do something once text has been successfully
+                        copied to the user's clipboard. This time, after you copy
+                        <a id="copy_notify" href="javascript:void(0);">&quot;Alerts are terrible!&quot;</a>, 
+                        you should see an alert notifying you that it is, indeed, terrible.
+                    </p>
+                    <pre name="code" class="js:nocontrols">window.onload = function() {
+    var cb3 = new SWFClipboard("copy_notify", "Alerts are terrible!", {
+        onTextCopied: function() { alert("I am terrible!"); }
+    });
+};</pre>
+
+                    <h2 id="autonavigate">Automatic Navigation</h2>
+                    <p>
+                        Navigation as shown in the example above works, but it would be
+                        much more convenient if the script would just figure out that
+                        the clipboard target is pointing at
+                        <a id="auto_navigate" href="http://xkcd.com">http://xkcd.com</a>.
+                    </p>
+                    <p>
+                        Your clipboard should contain &quot;XKCD&quot; after clicking the above
+                        link, and your browser should have opened <em>http://xkcd.com</em>.
+                    </p>
+                    <pre name="code" class="js:nocontrols">window.onload = function() {
+    var cb4 = new SWFClipboard("auto_navigate", "XKCD", {
+        navigate: true
+    });
+};</pre>
+
+                    <h2 id="dynamictarget">Dynamic Targets</h2>
+                    <p>
+                        When I built <a href="http://virtualkeychain.com">Virtual Keychain</a>,
+                        I ran into situations where there were 1000+ clipboard targets on a page.
+                        It turns out that <em>1000+ Flash movie instantiations is completely ludicrous</em>.
+                    </p>
+                    <p>
+                        The solution is to create one <code>SWFClipboard</code> instance,
+                        and ghost the mouse with it until you find a suitable target element.
+                    </p>
+                    <p>
+                        Each link below should copy its own text to your clipboard.
+                    </p>
+                    <ul>
+                        <li><a class="clipboard" href="javascript:void(0);">Target 1</a></li>
+                        <li><a class="clipboard" href="javascript:void(0);">Target 2</a></li>
+                        <li><a class="clipboard" href="javascript:void(0);">Target 3</a></li>
+                    </ul>
+                    <pre name="code" class="js:nocontrols">window.onload = function() {
+    var cb5 = new SWFClipboard();
+    document.onmousemove = function(event) {
+        event = event || window.event;
+        if (event) {
+            var element = event.target || event.srcElement;
+            if (element && element.className === "clipboard" && element !== cb5.target) {
+                cb5.setCopyText(element.innerHTML);
+                cb5.setTarget(element);
+            }
+        }
+    };                  
+};</pre>
+                </div>
+            </div>
+            <div class="yui-b">
+                <h5>On this page</h5>
+                <ul>
+                    <li><a href="#helloworld">Hello, world!</a></li>
+                    <li><a href="#copynavigate">Copy &amp Navigate</a></li>
+                    <li><a href="#copynotify">Copy &amp; Notify</a></li>
+                    <li><a href="#autonavigate">Automatic Navigation</a></li>
+                    <li><a href="#dynamictarget">Dynamic Targets</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <script language="javascript"> 
+        dp.SyntaxHighlighter.HighlightAll('code'); 
+    </script>
+</body>
+</html>
