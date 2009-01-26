@@ -114,7 +114,7 @@ SWFClipboard.prototype = {
         }
         
         if (this.element) {
-            this.element.remove();
+            this.element.parentNode.removeChild(this.element);
             this.element = null;
         }
         
