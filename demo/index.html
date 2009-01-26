@@ -60,7 +60,7 @@
 
                     <h2 id="copynavigate">Copy &amp; Navigate</h2>
                     <p>
-                        Now lets try and navigate to 
+                        Now let's try and navigate to 
                         <a id="copy_navigate" href="javascript:void(0);">http://google.com</a> 
                         while copying "Gooogle" to the clipboard. 
                     </p>
@@ -73,7 +73,7 @@
                     <p>
                         We have to let Flash take care of the navigation because Webkit browsers
                         will silently block a <code>window.open</code> call that is not initiated
-                        by a direct user action. Opera blocks even the Flash method, but it
+                        by a direct user action. Opera may even block the Flash method, but it
                         at least generates a warning.
                     </p>
                     
@@ -82,7 +82,7 @@
                         Often we'll want to do something once text has been successfully
                         copied to the user's clipboard. This time, after you copy
                         <a id="copy_notify" href="javascript:void(0);">&quot;Alerts are terrible!&quot;</a>, 
-                        you should see an alert notifying you that it is, indeed, terrible.
+                        you should see an alert notifying you that it is, in fact, terrible.
                     </p>
                     <pre name="code" class="js:nocontrols">window.onload = function() {
     var cb3 = new SWFClipboard("copy_notify", "Alerts are terrible!", {
@@ -100,6 +100,7 @@
                     <p>
                         Your clipboard should contain &quot;XKCD&quot; after clicking the above
                         link, and your browser should have opened <em>http://xkcd.com</em>.
+						Note that we didn't explicitly set the <code>navigateUrl</code> parameter.
                     </p>
                     <pre name="code" class="js:nocontrols">window.onload = function() {
     var cb4 = new SWFClipboard("auto_navigate", "XKCD", {
