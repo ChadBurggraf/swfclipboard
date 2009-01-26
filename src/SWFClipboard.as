@@ -174,7 +174,7 @@ package {
 			if (this.copyText != "") {
 				System.setClipboard(this.copyText);
 				
-				if (this.navigate && this.navigateUrl != "" && !(/^javascript/i.test(this.navigateUrl))) {
+				if (this.navigate && this.navigateUrl && !(/^javascript/i.test(this.navigateUrl))) {
 					var nt:String = /^_self|_blank|_parent|_top$/i.test(this.navigateTarget) ? this.navigateTarget : "_blank";
 					navigateToURL(new URLRequest(this.navigateUrl), nt);
 				}

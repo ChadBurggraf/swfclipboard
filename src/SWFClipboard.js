@@ -240,13 +240,14 @@ SWFClipboard.prototype = {
 			null;
         
         if (this.target) {
-            if (!prevent && 
-                this.options.navigate && 
-                this.target.tagName.toLowerCase() === "a" &&
-                !this.target.href.match(/^javascript/i)) {
+            if (!prevent && this.options.navigate) {
                 
-                this.options.navigateUrl = this.target.href || "";
-                this.options.navigateTarget = this.target.target || "_blank";
+				if (this.target.tagName.toLowerCase() === "a") {
+					this.options.navigateUrl = !this.target.href.match(/^javascript/i) ? this.target.href || "" : null;
+	                this.options.navigateTarget = this.target.target || "_blank";
+				} else {
+					this.options.navigateUrl = null;
+				}
 
                 this.callFlash("setNavigate", [
 	                this.options.navigateUrl, 
