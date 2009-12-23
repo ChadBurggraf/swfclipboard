@@ -1,3 +1,4 @@
 *.swf.cache
 *.DS_STORE
 *.tmproj
+compiletest.sh

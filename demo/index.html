@@ -12,26 +12,20 @@
 	    h1 { margin:1em 0 0 0; }
 	    #hd { margin-bottom:1em; }
 	</style>
-	<script type="text/javascript" src="swfclipboard.js"></script>
+	<script type="text/javascript" src="swfclipboard-1.2.js"></script>
 	<script type="text/javascript">
 		window.onload = function(event) {
 			var cb1 = new SWFClipboard("hello_world", "Hello, world!");
-			var cb2 = new SWFClipboard("copy_navigate", "Gooogle", {
-                navigate: true,
-                navigateUrl: "http://google.com"
-            });
+			var cb2 = new SWFClipboard("copy_navigate", "Gooogle");
             var cb3 = new SWFClipboard("copy_notify", "Alerts are terrible!", {
                 onTextCopied: function() { alert("I am terrible!"); }
-            });
-            var cb4 = new SWFClipboard("auto_navigate", "XKCD", {
-                navigate: true
             });
             var cb5 = new SWFClipboard();
             document.onmousemove = function(event) {
                 event = event || window.event;
                 if (event) {
                     var element = event.target || event.srcElement;
-                    if (element && element.className === "clipboard" && element !== cb5.target) {
+                    if (element && element.className === "clipboard" && element !== cb5.movie()) {
                         cb5.setCopyText(element.innerHTML);
                         cb5.setTarget(element);
                     }
@@ -61,20 +55,22 @@
                     <h2 id="copynavigate">Copy &amp; Navigate</h2>
                     <p>
                         Now let's try and navigate to 
-                        <a id="copy_navigate" href="javascript:void(0);">http://google.com</a> 
+                        <a id="copy_navigate" href="http://google.com/">http://google.com/</a> 
                         while copying "Gooogle" to the clipboard. 
                     </p>
                     <pre name="code" class="js:nocontrols">window.onload = function() {
-    var cb2 = new SWFClipboard("copy_navigate", "Gooogle", {
-        navigate: true,
-        navigateUrl: "http://google.com"
-    });
+    var cb2 = new SWFClipboard("copy_navigate", "Gooogle");
 };</pre>
+					<p>
+						Navigation behavior is inferred from the target element. Since the element
+						above is a link to <strong>http://google.com/</strong>, the link
+						is followed after the copy action takes place.
+					</p>
                     <p>
                         We have to let Flash take care of the navigation because Webkit browsers
                         will silently block a <code>window.open</code> call that is not initiated
-                        by a direct user action. Opera may even block the Flash method, but it
-                        at least generates a warning.
+                        by a direct user action. Opera may even block the Flash method, but
+                        at least it generates a warning.
                     </p>
                     
                     <h2 id="copynotify">Copy &amp; Notify</h2>
@@ -87,24 +83,6 @@
                     <pre name="code" class="js:nocontrols">window.onload = function() {
     var cb3 = new SWFClipboard("copy_notify", "Alerts are terrible!", {
         onTextCopied: function() { alert("I am terrible!"); }
-    });
-};</pre>
-
-                    <h2 id="autonavigate">Automatic Navigation</h2>
-                    <p>
-                        Navigation as shown in the example above works, but it would be
-                        much more convenient if the script would just figure out that
-                        the clipboard target is pointing at
-                        <a id="auto_navigate" href="http://xkcd.com">http://xkcd.com</a>.
-                    </p>
-                    <p>
-                        Your clipboard should contain &quot;XKCD&quot; after clicking the above
-                        link, and your browser should have opened <em>http://xkcd.com</em>.
-						Note that we didn't explicitly set the <code>navigateUrl</code> parameter.
-                    </p>
-                    <pre name="code" class="js:nocontrols">window.onload = function() {
-    var cb4 = new SWFClipboard("auto_navigate", "XKCD", {
-        navigate: true
     });
 };</pre>
 
@@ -132,7 +110,7 @@
         event = event || window.event;
         if (event) {
             var element = event.target || event.srcElement;
-            if (element && element.className === "clipboard" && element !== cb5.target) {
+            if (element && element.className === "clipboard" && element !== cb5.movie()) {
                 cb5.setCopyText(element.innerHTML);
                 cb5.setTarget(element);
             }
@@ -147,7 +125,6 @@
                     <li><a href="#helloworld">Hello, world!</a></li>
                     <li><a href="#copynavigate">Copy &amp Navigate</a></li>
                     <li><a href="#copynotify">Copy &amp; Notify</a></li>
-                    <li><a href="#autonavigate">Automatic Navigation</a></li>
                     <li><a href="#dynamictarget">Dynamic Targets</a></li>
                 </ul>
             </div>

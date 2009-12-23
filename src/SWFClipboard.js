@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2009 Chad Burggraf
- * Version: 1.1, 2009/05/22
+	 * Version: 1.2, 2009/12/22
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,7 +27,8 @@
 (function () {
 	var SWFClipboard,
 		count = 0,
-		instances = {};
+		instances = {},
+		flashReadyTimeoutInvoked = false;
 		
 	/*
 	 * Utility functions.
@@ -93,10 +94,7 @@
 		copyText = copyText || "";
 		options = extend({
 			css: "swfclipboard",
-			flashUrl: "swfclipboard.swf",
-			navigate: true,
-			navigateUrl: null,
-			navigateTarget: "_blank",
+			flashUrl: "swfclipboard-1.2.swf",
 			onFlashReady: null,
 			onTextCopied: null,
 			waitForLoad: false
@@ -107,29 +105,40 @@
 			movieElement,
 			eventQueue = [],
 			isFlashReady = false,
-			callTryCount = 0,
-			movieName = getNextMovieName();
+			movieName = getNextMovieName();	
 		
 		/*
 		 * Private members.
 		 */
 		
 		// Calls a Flash function.
-		function callFlash(callee, args) {
+		function callFlash(callee, args, callTryCount) {
 			var js,
 				i,
 				n;
 				
 			if (element) {
 				if (!isFlashReady) {
+				    if (typeof callTryCount == "undefined") {
+				        callTryCount = 0;
+				    }
+				    
 					if (callTryCount < 10) {
 						callTryCount = callTryCount + 1;
 						
 						setTimeout(function () {
-							callFlash(callee, args);
-						}, 10);
+							callFlash(callee, args, callTryCount);
+						}, 500);
 					} else {
-						throw "Tried to call Flash 10 times, but the movie is still not ready. Aborting call.";
+					    if (!flashReadyTimeoutInvoked) {
+					        if (typeof SWFClipboard.onFlashReadyTimeout === "function") {
+					            SWFClipboard.onFlashReadyTimeout(obj);
+					        }
+					        
+					        flashReadyTimeoutInvoked = true;
+					    }
+					    
+					    return;
 					}
 				} else {
 					args = args || [];
@@ -237,10 +246,7 @@
 					'<param name="allowscriptaccess" value="always"/>',
 					'<param name="flashvars" value="',
 						"movieName=", encodeURIComponent(movieName),
-						"&amp;copyText=", encodeURIComponent(copyText || ""),
-						"&amp;navigateUrl=", encodeURIComponent(options.navigateUrl || ""),
-						"&amp;navigateTarget=", encodeURIComponent(options.navigateTarget || "_blank"),
-						"&amp;navigate=", (!!(options.navigate)).toString(), '"/>',
+						"&amp;copyText=", encodeURIComponent(copyText || ""), '"/>"',
 					'</object>'].join("");
 			}
 		}
@@ -315,32 +321,19 @@
 				callFlash("setCopyText", [copyText]);
 			},
 			
-			// Sets the navigate behavior to use when the clipboard is activated.
-			setNavigate: function (newNavigateUrl, newNavigateTarget, newNavigate) {
-				options.navigateUrl = newNavigateUrl || "";
-				options.navigateTarget = newNavigateTarget || "";
-				options.navigate = !!(newNavigate);
-				
-				callFlash("setNavigate", [options.navigateUrl, options.navigateTarget, options.navigate]);
-			},
-			
 			// Sets the element this instance is targeting.
-			setTarget: function (newTarget, prevent) {
+			setTarget: function (newTarget) {
 				target = newTarget ? (typeof newTarget === "string" ? document.getElementById(newTarget) : newTarget) : null;
 				
-				if (target) {
-					if (!prevent && !options.navigateUrl) {
-						if (options.navigate) {
-							options.navigateUrl = !target.href.match(/^javascript/i) ? target.href : null;
-							options.navigateTarget = target.target || "_blank";
-						} else {
-							options.navigateUrl = null;
-						}
-					}
+				var navigateUrl = "",
+					navigateTarget = "";
 
-					callFlash("setNavigate", [options.navigateUrl, options.navigateTarget, !!(options.navigate)]);
+				if (target && target.tagName.toLowerCase() === "a" && target.href) {
+					navigateUrl = target.href;
+					navigateTarget = target.target || "_blank";
 				}
 				
+				callFlash("setNavigate", [navigateUrl, navigateTarget]);
 				refreshSize();
 			},
 			
@@ -363,6 +356,9 @@
 		addInstance(movieName, obj);
 		return obj;
 	};
+	
+	// Static callback for Flash ready timeout.
+	SWFClipboard.onFlashReadyTimeout = function() { };
 	
 	// Tell the world about ourselves.
 	window.SWFClipboard = SWFClipboard;

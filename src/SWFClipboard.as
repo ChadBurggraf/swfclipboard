@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2009 Chad Burggraf
+ * Version: 1.2, 2009/12/17
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -62,11 +63,10 @@ package {
 		// Flasvars.
 		private var movieName:String;
 		private var copyText:String;
-		private var navigateUrl:String;
-		private var navigateTarget:String;
-		private var navigate:Boolean;
 		
 		// Members.
+		private var navigateUrl:String;
+		private var navigateTarget:String;
 		private var buttonSprite:Sprite;
 		
 		/*
@@ -102,9 +102,6 @@ package {
 			// Instantiate the flashvars.
 			this.movieName = root.loaderInfo.parameters.movieName;
 			this.copyText = root.loaderInfo.parameters.copyText || "";
-			this.navigateUrl = root.loaderInfo.parameters.navigateUrl || "";
-			this.navigateTarget = root.loaderInfo.parameters.navigateTarget || "_blank";
-			this.navigate = root.loaderInfo.parameters.navigate === "true";
 			
 			// Setup the JavaScript callbacks.
 			this.flashReady_Callback = "SWFClipboard.instances[\"" + this.movieName + "\"].flashReady";
@@ -160,10 +157,9 @@ package {
 		 * Sets the navigation behavior of the button when
 		 * a copy is initiated.
 		 */
-		private function setNavigate(navigateUrl:String, navigateTarget:String, navigate:Boolean):void {
+		private function setNavigate(navigateUrl:String, navigateTarget:String):void {
 			this.navigateUrl = navigateUrl;
 			this.navigateTarget = navigateTarget;
-			this.navigate = navigate;
 		}
 		
 		/*********************************************************
@@ -171,12 +167,12 @@ package {
 		 *********************************************************/
 		
 		private function onStageClick(event:MouseEvent):void {
-			if (this.copyText != "") {
+			if (this.copyText !== "") {
 				System.setClipboard(this.copyText);
 				ExternalInterface.call(this.textCopied_Callback);
 			}
 			
-			if (this.navigate && this.navigateUrl && !(/^javascript/i.test(this.navigateUrl))) {
+			if (this.navigateUrl && !(/^javascript/i.test(this.navigateUrl))) {
 				var nt:String = /^_self|_blank|_parent|_top$/i.test(this.navigateTarget) ? this.navigateTarget : "_blank";
 				navigateToURL(new URLRequest(this.navigateUrl), nt);
 			}
